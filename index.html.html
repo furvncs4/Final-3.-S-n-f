@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Hazırlık · Komite Sınavı</title>
+<style>
+  :root{
+    --ink:#222; --paper:#faf9f6; --card:#ffffff; --line:#e6e3dc;
+    --muted:#8a8d94; --accent:#4a5568; --accent-soft:#eef0f3;
+    --ok:#2f6f4e; --warn:#8a5a20; --danger:#9b3434;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+    background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+
+  header.top{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+  .top-inner{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:10px 0 8px}
+  .ust-araclar{display:flex;gap:8px;align-items:center;padding:0 0 10px;flex-wrap:wrap}
+  .brand{font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-family:ui-monospace,Menlo,monospace;color:var(--muted)}
+  .countdown{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+  .countdown b{color:var(--accent)}
+
+  .hero{padding:34px 0 22px;border-bottom:1px solid var(--line)}
+  .hero .date{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .hero h1{font-size:clamp(28px,6vw,40px);font-weight:600;line-height:1.1}
+  .hero p{margin-top:12px;color:var(--muted);max-width:54ch;font-size:16px}
+
+  .ozet-panel{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 8px}
+  .ozet-kutu{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:8px 10px}
+  .ozet-kutu .etiket{font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .ozet-kutu .deger{font-family:ui-monospace,Menlo,monospace;font-size:16px;color:var(--accent);margin-top:2px}
+
+  .arama{flex:1;min-width:210px;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:8px 11px;font:inherit;color:inherit;font-size:14px}
+  .arama:focus{outline:2px solid var(--accent);outline-offset:2px}
+  .filtre-btn,.mini-btn{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:8px 10px;font:inherit;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--accent);cursor:pointer;transition:border-color .15s,background .15s}
+  .filtre-btn:hover,.mini-btn:hover{border-color:var(--accent)}
+  .filtre-btn.aktif{background:var(--accent-soft);border-color:var(--accent)}
+  .ipucu{font-size:13px;color:var(--muted);margin:8px 0 0}
+  .gizli{display:none!important}
+
+  .durum-serit{font-family:ui-monospace,Menlo,monospace;font-size:11px;padding:6px 0;color:var(--muted)}
+  .durum-serit.hata{color:var(--danger)}
+  .durum-serit.ok{color:var(--ok)}
+
+  .grup-baslik{margin:34px 0 10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+  .ders-satir{display:flex;align-items:center;gap:14px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:17px 19px;margin-bottom:10px;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:border-color .15s, background .15s}
+  .ders-satir:hover{border-color:var(--accent);background:#fff}
+  .ders-satir:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ders-satir .ders-ana{flex:1;min-width:0}
+  .ders-satir .ad{font-size:19px;font-weight:600;line-height:1.2}
+  .ders-satir .meta{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);white-space:nowrap}
+  .ders-satir .ok{font-family:ui-monospace,Menlo,monospace;font-size:16px;color:var(--accent)}
+  .bar{height:4px;background:var(--accent-soft);border-radius:999px;overflow:hidden;margin-top:8px;border:1px solid var(--line)}
+  .bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+  .ders-alt{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);margin-top:6px}
+
+  .arama-sonuclari{margin-top:14px}
+  .sonuc{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:8px;text-decoration:none;color:inherit}
+  .sonuc:hover{border-color:var(--accent)}
+  .sonuc .baslik{flex:1;font-size:15px}
+  .sonuc .nerede{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted)}
+
+  .detay{display:none;padding-bottom:60px}
+  .detay.acik{display:block}
+  .geri{background:none;border:1px solid var(--line);border-radius:6px;font:inherit;cursor:pointer;color:var(--accent);font-family:ui-monospace,Menlo,monospace;font-size:13px;padding:8px 14px;margin:20px 0 4px;display:inline-flex;align-items:center;gap:6px;transition:border-color .15s}
+  .geri:hover{border-color:var(--accent)}
+  .detay h1{font-size:clamp(24px,5vw,34px);margin:8px 0 10px;font-weight:600}
+  .detay-ozet{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);margin-bottom:18px}
+  .detay-araclar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+
+  .kategori{margin-bottom:28px}
+  .kategori h3{font-size:17px;font-weight:600;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .kategori h3 .sayi{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);font-weight:400}
+  .kategori h3 .ekle-btn{margin-left:auto;border:1px solid var(--line);background:var(--paper);border-radius:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--accent);padding:4px 9px;cursor:pointer}
+  .kategori h3 .ekle-btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+
+  .materyal{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:11px 12px;margin-bottom:8px;transition:border-color .15s, opacity .15s}
+  .materyal:hover{border-color:var(--accent)}
+  .materyal .baslik{font-size:15px;min-width:0;text-decoration:none;color:inherit;display:block}
+  .materyal .baslik:hover{color:var(--accent)}
+  .materyal .ac{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted)}
+  .materyal .baslik:hover .ac{color:var(--accent)}
+  .materyal.bitti{opacity:.66}
+  .durumlar{display:flex;gap:6px;align-items:center}
+  .durum-btn{border:1px solid var(--line);background:var(--paper);border-radius:999px;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--muted);padding:3px 6px;cursor:pointer;white-space:nowrap}
+  .durum-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .durum-btn.aktif{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  .durum-btn.bitti.aktif{color:var(--ok)}
+  .durum-btn.tekrar.aktif{color:var(--warn)}
+  .sil-btn{border:1px solid var(--line);background:none;border-radius:6px;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);padding:4px 8px;cursor:pointer}
+  .sil-btn:hover{border-color:var(--danger);color:var(--danger)}
+
+  .bos{border:1px dashed var(--line);border-radius:6px;padding:14px 16px;color:var(--muted);font-size:14px;font-style:italic}
+
+  /* Modal */
+  .modal-arka{position:fixed;inset:0;background:rgba(20,20,25,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .modal-arka.acik{display:flex}
+  .modal{background:var(--card);border-radius:12px;border:1px solid var(--line);max-width:440px;width:100%;padding:24px}
+  .modal h2{font-size:20px;font-weight:600;margin-bottom:4px}
+  .modal .alt{font-size:13px;color:var(--muted);margin-bottom:18px}
+  .modal label{display:block;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 5px}
+  .modal input,.modal select{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:10px 12px;font:inherit;font-size:15px;color:inherit}
+  .modal input:focus,.modal select:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .modal-hata{color:var(--danger);font-size:13px;margin-top:10px;min-height:18px}
+  .modal-butonlar{display:flex;gap:10px;margin-top:20px}
+  .modal-butonlar button{flex:1;border-radius:8px;padding:11px;font:inherit;font-size:15px;cursor:pointer;border:1px solid var(--line)}
+  .btn-iptal{background:var(--paper);color:var(--ink)}
+  .btn-iptal:hover{border-color:var(--accent)}
+  .btn-onay{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn-onay:hover{opacity:.9}
+  .btn-onay:disabled{opacity:.5;cursor:not-allowed}
+
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:13px;text-align:center}
+  @media (max-width:650px){
+    .ozet-panel{grid-template-columns:repeat(2,1fr)}
+    .ders-satir{padding:15px;gap:10px}
+    .materyal{grid-template-columns:1fr;align-items:start;gap:8px}
+    .durumlar{flex-wrap:wrap}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <span class="brand">Final · Komite</span>
+    <span class="countdown">Finale <b id="kalan">–</b> gün</span>
+  </div>
+  <div class="wrap ust-araclar">
+    <input id="arama" class="arama" type="search" placeholder="Materyal veya ders ara... örn. patoloji, NSAİİ, radyoloji">
+    <button id="tekrar-filtre" class="filtre-btn" type="button" onclick="tekrarModuDegistir()">Tekrar modu</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="anasayfa">
+    <div class="hero">
+      <div class="date">3 Temmuz 2026 · Final Sınavı</div>
+      <h1>Çalışma Masası</h1>
+      <p>Her ders için PDF'ler, yapay zeka özet ve soruları, arkadaş notları tek yerde. Materyalleri işaretle, ilerlemeni takip et, son günlerde tekrar moduna geç.</p>
+    </div>
+
+    <div class="ozet-panel" id="ozet-panel">
+      <div class="ozet-kutu"><div class="etiket">Toplam</div><div class="deger" id="toplam-materyal">0</div></div>
+      <div class="ozet-kutu"><div class="etiket">Bitti</div><div class="deger" id="bitti-materyal">0</div></div>
+      <div class="ozet-kutu"><div class="etiket">Tekrar</div><div class="deger" id="tekrar-materyal">0</div></div>
+      <div class="ozet-kutu"><div class="etiket">İlerleme</div><div class="deger" id="genel-yuzde">0%</div></div>
+    </div>
+
+    <div class="durum-serit" id="baglanti-durum">Materyaller yükleniyor…</div>
+    <p class="ipucu" id="ipucu">İlerleme bilgileri sadece senin cihazında saklanır. Siteyi paylaşınca herkes kendi takibini ayrı tutar.</p>
+    <div id="arama-sonuclari" class="arama-sonuclari gizli"></div>
+
+    <div id="gruplar"></div>
+  </section>
+
+  <section id="detay" class="detay">
+    <button class="geri" onclick="anaSayfaGoster()">← Tüm dersler</button>
+    <h1 id="detay-ad"></h1>
+    <div class="detay-ozet" id="detay-ozet"></div>
+    <div class="detay-araclar">
+      <button class="mini-btn" id="ders-tekrar-btn" onclick="buDersTekrarGoster()">Sadece tekrarlıkları göster</button>
+      <button class="mini-btn" onclick="buDersIsaretleriniSifirla()">Bu dersin işaretlerini sıfırla</button>
+    </div>
+    <div id="detay-kategoriler"></div>
+  </section>
+</main>
+
+<footer class="wrap">Ortak çalışma arşivi · materyaller herkese açık · linkler Google Drive'da · Linkler açılmıyorsa Drive paylaşımını "bağlantıya sahip herkes görüntüleyebilir" yap.</footer>
+
+<!-- Materyal ekleme modalı -->
+<div class="modal-arka" id="ekle-modal">
+  <div class="modal">
+    <h2>Materyal ekle</h2>
+    <div class="alt" id="ekle-modal-yer"></div>
+    <label>Başlık</label>
+    <input id="ekle-baslik" type="text" placeholder="örn. Neuro tümörleri slaytı" autocomplete="off">
+    <label>Drive linki</label>
+    <input id="ekle-link" type="url" placeholder="https://drive.google.com/..." autocomplete="off">
+    <label>Düzenleme şifresi</label>
+    <input id="ekle-sifre" type="password" placeholder="Yetkili şifresi" autocomplete="off">
+    <div class="modal-hata" id="ekle-hata"></div>
+    <div class="modal-butonlar">
+      <button class="btn-iptal" type="button" onclick="modalKapat()">İptal</button>
+      <button class="btn-onay" id="ekle-onay" type="button" onclick="materyalEkle()">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   AYARLAR
+   ============================================================ */
+const SUPABASE_URL = "https://tssiyqkttdmjilkrubgt.supabase.co";
+const SUPABASE_KEY = "sb_publishable_wO_vKJClYmjqjaZJBj1j_A_898jKFSF";
+
+/* Dersler ve gruplar sabit. Kategoriler: pdf / yapayzeka / notlar.
+   Materyaller Supabase'deki "materyaller" tablosundan canlı yüklenir. */
+const GRUPLAR = [
+  { grup:"Ana Dersler", dersler:["Tıbbi Farmakoloji","Tıbbi Mikrobiyoloji","Tıbbi Patoloji"] },
+  { grup:"Grup 1",      dersler:["Çocuk Sağlığı","Halk Sağlığı","Radyoloji"] },
+  { grup:"Grup 2",      dersler:["İç Hastalıkları","Enfeksiyon Hastalıkları","Tıbbi Biyokimya","Tıbbi Genetik"] },
+  { grup:"Grup 3",      dersler:["Klinik Becerileri","Genel Cerrahi","Kardiyoloji","Çocuk Cerrahisi","Kadın Hastalıkları ve Doğum"] },
+];
+const KATEGORI_ADLARI = [
+  ["pdf","Hocanın işaret ettiği PDF'ler"],
+  ["yapayzeka","Yapay zeka özet & soruları"],
+  ["notlar","Arkadaş notları"],
+];
+
+/* ============================================================
+   VERİ KATMANI (Supabase REST)
+   ============================================================ */
+let MATERYALLER = []; // {id, ders, kategori, baslik, link}
+const api = (yol)=>SUPABASE_URL.replace(/\/+$/,"")+"/rest/v1/"+yol;
+function baslik_(extra){ return Object.assign({apikey:SUPABASE_KEY, Authorization:"Bearer "+SUPABASE_KEY}, extra||{}); }
+
+async function materyalleriYukle(){
+  const d=document.getElementById("baglanti-durum");
+  d.className="durum-serit"; d.textContent="Materyaller yükleniyor…";
+  try{
+    const r=await fetch(api("materyaller?select=id,ders,kategori,baslik,link&order=olusturulma.asc"),{headers:baslik_()});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    MATERYALLER=await r.json();
+    d.className="durum-serit ok"; d.textContent=MATERYALLER.length+" materyal yüklendi · herkes ekleyip silebilir";
+  }catch(e){
+    d.className="durum-serit hata";
+    d.textContent="Bağlantı hatası: materyaller yüklenemedi. İnterneti ve Supabase ayarlarını kontrol et.";
+    MATERYALLER=[];
+  }
+  anaSayfaCiz();
+}
+
+async function materyalEkleAPI(kayit, sifre){
+  const r=await fetch(api("rpc/materyal_ekle"),{
+    method:"POST",
+    headers:baslik_({"Content-Type":"application/json"}),
+    body:JSON.stringify({p_sifre:sifre, p_ders:kayit.ders, p_kategori:kayit.kategori, p_baslik:kayit.baslik, p_link:kayit.link})
+  });
+  if(!r.ok){
+    if(r.status===401||r.status===403) throw new Error("yetki");
+    throw new Error("HTTP "+r.status);
+  }
+  return await r.json(); // tek satır döner
+}
+
+async function materyalSilAPI(id, sifre){
+  const r=await fetch(api("rpc/materyal_sil"),{
+    method:"POST",
+    headers:baslik_({"Content-Type":"application/json"}),
+    body:JSON.stringify({p_sifre:sifre, p_id:id})
+  });
+  if(!r.ok){
+    if(r.status===401||r.status===403) throw new Error("yetki");
+    throw new Error("HTTP "+r.status);
+  }
+  return true;
+}
+
+// Şifreyi oturum boyunca hatırla (her seferinde sormamak için)
+function sifreGetir(){ return sessionStorage.getItem("duzenleme_sifresi")||""; }
+function sifreKaydet(s){ sessionStorage.setItem("duzenleme_sifresi",s); }
+
+/* ============================================================
+   İLERLEME TAKİBİ (cihaza özel, localStorage)
+   ============================================================ */
+const LS_KEY="finalSitesiTakip_v3";
+let takip=JSON.parse(localStorage.getItem(LS_KEY)||"{}");
+function kaydet(){ localStorage.setItem(LS_KEY,JSON.stringify(takip)); }
+function durum(id){ return takip[id] || {bitti:false, tekrar:false}; }
+function yuzde(b,t){ return t ? Math.round((b/t)*100) : 0; }
+
+let aktifDersAd=null;
+let sadeceTekrar=false;
+let dersTekrarFiltre=false;
+
+/* ============================================================
+   YARDIMCILAR
+   ============================================================ */
+function dersMateryalleri(dersAd){ return MATERYALLER.filter(m=>m.ders===dersAd); }
+function dersKatMateryalleri(dersAd,key){ return MATERYALLER.filter(m=>m.ders===dersAd && m.kategori===key); }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+(function(){
+  const final=new Date("2026-07-03T00:00:00+03:00");
+  const gun=Math.max(0,Math.ceil((final-new Date())/86400000));
+  document.getElementById("kalan").textContent=gun;
+})();
+
+function ozetGuncelle(){
+  const bitti=MATERYALLER.filter(m=>durum(m.id).bitti).length;
+  const tekrar=MATERYALLER.filter(m=>durum(m.id).tekrar).length;
+  document.getElementById("toplam-materyal").textContent=MATERYALLER.length;
+  document.getElementById("bitti-materyal").textContent=bitti;
+  document.getElementById("tekrar-materyal").textContent=tekrar;
+  document.getElementById("genel-yuzde").textContent=yuzde(bitti,MATERYALLER.length)+"%";
+}
+
+/* ============================================================
+   ANA SAYFA
+   ============================================================ */
+function anaSayfaCiz(){
+  const k=document.getElementById("gruplar");k.innerHTML="";
+  GRUPLAR.forEach((g)=>{
+    const gorunenDersler=g.dersler.filter(dersAd=>{
+      if(!sadeceTekrar) return true;
+      return dersMateryalleri(dersAd).some(m=>durum(m.id).tekrar);
+    });
+    if(gorunenDersler.length===0) return;
+    const bas=document.createElement("div");
+    bas.className="grup-baslik";bas.textContent=g.grup;
+    k.appendChild(bas);
+    gorunenDersler.forEach(dersAd=>{
+      const items=dersMateryalleri(dersAd);
+      const toplam=items.length;
+      const bitti=items.filter(m=>durum(m.id).bitti).length;
+      const tekrar=items.filter(m=>durum(m.id).tekrar).length;
+      const y=yuzde(bitti,toplam);
+      const btn=document.createElement("button");
+      btn.className="ders-satir";
+      btn.onclick=()=>dersGoster(dersAd);
+      btn.innerHTML=`<div class="ders-ana">
+          <span class="ad">${esc(dersAd)}</span>
+          <div class="bar" aria-hidden="true"><span style="width:${y}%"></span></div>
+          <div class="ders-alt">${bitti} bitti · ${Math.max(0,toplam-bitti)} kaldı · ${tekrar} tekrar</div>
+        </div>
+        <span class="meta">${toplam} materyal · ${y}%</span>
+        <span class="ok">→</span>`;
+      k.appendChild(btn);
+    });
+  });
+  ozetGuncelle();
+}
+
+/* ============================================================
+   ARAMA
+   ============================================================ */
+function aramaYap(){
+  const q=document.getElementById("arama").value.trim().toLocaleLowerCase("tr-TR");
+  const sonuc=document.getElementById("arama-sonuclari");
+  if(!q){ sonuc.classList.add("gizli"); sonuc.innerHTML=""; anaSayfaCiz(); return; }
+  const katAd=Object.fromEntries(KATEGORI_ADLARI);
+  const eslesen=MATERYALLER.filter(m=>{
+    const metin=(m.ders+" "+(katAd[m.kategori]||m.kategori)+" "+m.baslik).toLocaleLowerCase("tr-TR");
+    return metin.includes(q);
+  });
+  sonuc.classList.remove("gizli");
+  sonuc.innerHTML=eslesen.length ? eslesen.map(m=>`<a class="sonuc" href="${esc(m.link)}" target="_blank" rel="noopener">
+      <span class="baslik">${esc(m.baslik)}</span>
+      <span class="nerede">${esc(m.ders)} · ${esc(katAd[m.kategori]||m.kategori)}</span>
+    </a>`).join("") : `<div class="bos">Aramana uygun materyal bulunamadı.</div>`;
+}
+document.getElementById("arama").addEventListener("input",aramaYap);
+
+function tekrarModuDegistir(){
+  sadeceTekrar=!sadeceTekrar;
+  const b=document.getElementById("tekrar-filtre");
+  b.classList.toggle("aktif",sadeceTekrar);
+  b.textContent=sadeceTekrar ? "Tekrar modu açık" : "Tekrar modu";
+  document.getElementById("ipucu").textContent=sadeceTekrar ? "Sadece tekrar edilecek olarak işaretlediğin dersler ve materyaller gösteriliyor." : "İlerleme bilgileri sadece senin cihazında saklanır. Siteyi paylaşınca herkes kendi takibini ayrı tutar.";
+  anaSayfaCiz();
+  if(aktifDersAd) dersGoster(aktifDersAd,true);
+}
+
+/* ============================================================
+   DERS DETAY
+   ============================================================ */
+function dersGoster(dersAd,hashKorunsun=false){
+  aktifDersAd=dersAd;
+  document.getElementById("detay-ad").textContent=dersAd;
+  const items=dersMateryalleri(dersAd);
+  const bitti=items.filter(m=>durum(m.id).bitti).length;
+  const tekrar=items.filter(m=>durum(m.id).tekrar).length;
+  document.getElementById("detay-ozet").textContent=`${items.length} materyal · ${bitti} bitti · ${Math.max(0,items.length-bitti)} kaldı · ${tekrar} tekrar · ${yuzde(bitti,items.length)}% tamamlandı`;
+  const c=document.getElementById("detay-kategoriler");c.innerHTML="";
+  KATEGORI_ADLARI.forEach(([key,ad])=>{
+    let liste=dersKatMateryalleri(dersAd,key);
+    const filtreAktif = sadeceTekrar || dersTekrarFiltre;
+    if(filtreAktif) liste=liste.filter(m=>durum(m.id).tekrar);
+    const blok=document.createElement("div");blok.className="kategori";
+    let ic=`<h3>${ad}<span class="sayi">${liste.length}</span>
+      <button class="ekle-btn" type="button" onclick="modalAc('${esc(dersAd).replace(/'/g,"\\'")}','${key}')">+ Ekle</button></h3>`;
+    if(liste.length===0){
+      ic+=`<div class="bos">${filtreAktif ? "Bu kategoride tekrar edilecek materyal yok." : "Henüz materyal eklenmedi. + Ekle ile ilk materyali koy."}</div>`;
+    }else{
+      liste.forEach(m=>{
+        const st=durum(m.id);
+        ic+=`<div class="materyal ${st.bitti ? "bitti" : ""}">
+          <div class="durumlar">
+            <button class="durum-btn bitti ${st.bitti ? "aktif" : ""}" type="button" onclick="durumDegistir('${m.id}','bitti')">✓ Bitti</button>
+            <button class="durum-btn tekrar ${st.tekrar ? "aktif" : ""}" type="button" onclick="durumDegistir('${m.id}','tekrar')">↻ Tekrar</button>
+          </div>
+          <a class="baslik" href="${esc(m.link)}" target="_blank" rel="noopener">${esc(m.baslik)}<span class="ac"> Aç ↗</span></a>
+          <button class="sil-btn" type="button" onclick="materyalSil('${m.id}')" title="Sil">Sil</button>
+        </div>`;
+      });
+    }
+    blok.innerHTML=ic;c.appendChild(blok);
+  });
+  document.getElementById("anasayfa").style.display="none";
+  document.getElementById("detay").classList.add("acik");
+  const dtBtn=document.getElementById("ders-tekrar-btn");
+  if(dtBtn){
+    dtBtn.textContent = dersTekrarFiltre ? "Tümünü göster" : "Sadece tekrarlıkları göster";
+    dtBtn.classList.toggle("aktif", dersTekrarFiltre);
+  }
+  if(!hashKorunsun && location.hash!=="#ders") history.pushState({v:"ders"},"","#ders");
+  window.scrollTo(0,0);
+}
+
+function durumDegistir(id,tip){
+  const st=durum(id);
+  st[tip]=!st[tip];
+  takip[id]=st;
+  kaydet();
+  if(aktifDersAd) dersGoster(aktifDersAd,true);
+  anaSayfaCiz();
+}
+
+function buDersTekrarGoster(){
+  dersTekrarFiltre=!dersTekrarFiltre;
+  if(aktifDersAd) dersGoster(aktifDersAd,true);
+}
+
+function buDersIsaretleriniSifirla(){
+  if(!aktifDersAd) return;
+  if(!confirm(aktifDersAd+" dersindeki tüm 'bitti' ve 'tekrar' işaretleri silinecek. (Materyaller silinmez, sadece senin işaretlerin.) Emin misin?")) return;
+  dersMateryalleri(aktifDersAd).forEach(m=>delete takip[m.id]);
+  kaydet();
+  dersGoster(aktifDersAd,true);
+  anaSayfaCiz();
+}
+
+/* ============================================================
+   EKLE / SİL
+   ============================================================ */
+let modalHedef={ders:null,kategori:null};
+function modalAc(dersAd,key){
+  modalHedef={ders:dersAd,kategori:key};
+  const katAd=Object.fromEntries(KATEGORI_ADLARI);
+  document.getElementById("ekle-modal-yer").textContent=dersAd+" · "+(katAd[key]||key);
+  document.getElementById("ekle-baslik").value="";
+  document.getElementById("ekle-link").value="";
+  document.getElementById("ekle-sifre").value=sifreGetir();
+  document.getElementById("ekle-hata").textContent="";
+  document.getElementById("ekle-modal").classList.add("acik");
+  document.getElementById("ekle-baslik").focus();
+}
+function modalKapat(){ document.getElementById("ekle-modal").classList.remove("acik"); }
+
+async function materyalEkle(){
+  const baslik=document.getElementById("ekle-baslik").value.trim();
+  const link=document.getElementById("ekle-link").value.trim();
+  const sifre=document.getElementById("ekle-sifre").value;
+  const hata=document.getElementById("ekle-hata");
+  hata.textContent="";
+  if(!baslik){ hata.textContent="Başlık boş olamaz."; return; }
+  if(!/^https?:\/\//i.test(link)){ hata.textContent="Geçerli bir link gir (https:// ile başlamalı)."; return; }
+  if(!sifre){ hata.textContent="Düzenleme şifresi gerekli."; return; }
+  const btn=document.getElementById("ekle-onay");
+  btn.disabled=true; btn.textContent="Ekleniyor…";
+  try{
+    const yeni=await materyalEkleAPI({ders:modalHedef.ders,kategori:modalHedef.kategori,baslik,link},sifre);
+    sifreKaydet(sifre);
+    MATERYALLER.push(yeni);
+    modalKapat();
+    dersGoster(modalHedef.ders,true);
+    anaSayfaCiz();
+  }catch(e){
+    if(e.message==="yetki") hata.textContent="Şifre yanlış — ekleme yetkin yok.";
+    else hata.textContent="Eklenemedi (bağlantı hatası). Tekrar dene.";
+  }finally{
+    btn.disabled=false; btn.textContent="Ekle";
+  }
+}
+
+async function materyalSil(id){
+  const m=MATERYALLER.find(x=>x.id===id);
+  if(!m) return;
+  if(!confirm(`"${m.baslik}" materyali HERKES için kalıcı olarak silinecek. Emin misin?`)) return;
+  let sifre=sifreGetir();
+  if(!sifre){
+    sifre=prompt("Silmek için düzenleme şifresini gir:");
+    if(sifre===null) return;
+  }
+  try{
+    await materyalSilAPI(id,sifre);
+    sifreKaydet(sifre);
+    MATERYALLER=MATERYALLER.filter(x=>x.id!==id);
+    delete takip[id]; kaydet();
+    if(aktifDersAd) dersGoster(aktifDersAd,true);
+    anaSayfaCiz();
+  }catch(e){
+    if(e.message==="yetki"){
+      sessionStorage.removeItem("duzenleme_sifresi");
+      alert("Şifre yanlış — silme yetkin yok.");
+    } else {
+      alert("Silinemedi (bağlantı hatası). Tekrar dene.");
+    }
+  }
+}
+
+/* ============================================================
+   NAVİGASYON
+   ============================================================ */
+function anaSayfaGoster(){
+  aktifDersAd=null;
+  dersTekrarFiltre=false;
+  document.getElementById("detay").classList.remove("acik");
+  document.getElementById("anasayfa").style.display="block";
+  if(location.hash==="#ders") history.back();
+  window.scrollTo(0,0);
+}
+window.addEventListener("popstate",()=>{
+  aktifDersAd=null;
+  dersTekrarFiltre=false;
+  document.getElementById("ekle-modal").classList.remove("acik");
+  document.getElementById("detay").classList.remove("acik");
+  document.getElementById("anasayfa").style.display="block";
+  window.scrollTo(0,0);
+});
+document.getElementById("ekle-modal").addEventListener("click",e=>{ if(e.target.id==="ekle-modal") modalKapat(); });
+
+/* Başlat */
+materyalleriYukle();
+</script>
+</body>
+</html>
